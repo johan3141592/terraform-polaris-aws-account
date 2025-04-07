@@ -9,7 +9,7 @@ variables {
 run "aws_account" {
   # polaris_aws_cnp_artifacts data source.
   assert {
-    condition     = data.polaris_aws_cnp_artifacts.artifacts.cloud == var.cloud_type
+    condition     = data.polaris_aws_cnp_artifacts.artifacts.cloud == "STANDARD"
     error_message = "The cloud type does not match the expected value."
   }
   assert {
@@ -31,7 +31,7 @@ run "aws_account" {
     error_message = "The number of permissions instances does not match the expected value."
   }
   assert {
-    condition     = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].cloud == var.cloud_type
+    condition     = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].cloud == "STANDARD"
     error_message = "The cloud type does not match the expected value."
   }
   assert {
@@ -43,25 +43,25 @@ run "aws_account" {
     error_message = "The role keys does not match the expected value."
   }
   assert {
-    condition = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].feature == "CLOUD_NATIVE_PROTECTION"
+    condition     = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].feature == "CLOUD_NATIVE_PROTECTION"
     error_message = "The customer managed policies feature does not match the expected value."
   }
   assert {
-    condition = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].name == "EC2ProtectionPolicy"
+    condition     = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].name == "EC2ProtectionPolicy"
     error_message = "The customer managed policies name does not match the expected value."
   }
   assert {
-    condition = can(regex(var.ec2_recovery_role_path, data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].policy))
+    condition     = data.polaris_aws_cnp_permissions.permissions["CROSSACCOUNT"].customer_managed_policies[0].policy != ""
     error_message = "The customer managed policies policy does not match the expected value."
   }
 
   # polaris_aws_cnp_account resource.
   assert {
-    condition     = length(polaris_aws_cnp_account.account.id) == 36 && polaris_aws_cnp_account.account.id != "00000000-0000-0000-0000-000000000000"
+    condition     = can(regex(local.uuid_regex, polaris_aws_cnp_account.account.id)) && polaris_aws_cnp_account.account.id != local.uuid_null
     error_message = "The resource ID does not match the expected value."
   }
   assert {
-    condition     = polaris_aws_cnp_account.account.cloud == var.cloud_type
+    condition     = polaris_aws_cnp_account.account.cloud == "STANDARD"
     error_message = "The cloud type does not match the expected value."
   }
   assert {
@@ -85,11 +85,11 @@ run "aws_account" {
     error_message = "The external ID does not match the expected value."
   }
   assert {
-    condition = length(polaris_aws_cnp_account.account.regions) == length(var.regions)
+    condition     = length(polaris_aws_cnp_account.account.regions) == length(var.regions)
     error_message = "The number of regions does not match the expected value."
   }
   assert {
-    condition = length(setsubtract(polaris_aws_cnp_account.account.regions, var.regions)) == 0
+    condition     = length(setsubtract(polaris_aws_cnp_account.account.regions, var.regions)) == 0
     error_message = "The regions does not match the expected value."
   }
   assert {
@@ -217,11 +217,11 @@ run "update_regions" {
     error_message = "The resource ID does not match the expected value."
   }
   assert {
-    condition = length(polaris_aws_cnp_account.account.regions) == length(var.regions)
+    condition     = length(polaris_aws_cnp_account.account.regions) == length(var.regions)
     error_message = "The number of regions does not match the expected value."
   }
   assert {
-    condition = length(setsubtract(polaris_aws_cnp_account.account.regions, var.regions)) == 0
+    condition     = length(setsubtract(polaris_aws_cnp_account.account.regions, var.regions)) == 0
     error_message = "The regions does not match the expected value."
   }
 }

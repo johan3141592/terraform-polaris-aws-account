@@ -1,7 +1,7 @@
 pipeline {
     agent any
     triggers {
-        cron(env.BRANCH_NAME == 'main' ? 'H 11 * * *' : '')
+        cron(env.BRANCH_NAME == 'main' ? 'H 23 * * *' : '')
     }
     parameters {
         booleanParam(name: 'RUN_TESTS', defaultValue: false)

@@ -32,6 +32,11 @@ locals {
 variable "account_id" {
   type        = string
   description = "AWS account ID."
+
+  validation {
+    condition     = can(regex("^[0-9]{12}$", var.account_id))
+    error_message = "The AWS account ID must be a valid 12-digit AWS account ID."
+  }
 }
 
 variable "account_name" {
@@ -41,24 +46,24 @@ variable "account_name" {
 
 variable "cloud_type" {
   type        = string
-  default     = "STANDARD"
+  default     = null
   description = "AWS cloud type. Possible values are: STANDARD, GOV. Defaults to STANDARD."
 
   validation {
-    condition     = can(regex("STANDARD|GOV", var.cloud_type))
+    condition     = var.cloud_type == null || can(regex("STANDARD|GOV", var.cloud_type))
     error_message = "Invalid AWS cloud type. Allowed values are: STANDARD or GOV."
   }
 }
 
 variable "ec2_recovery_role_path" {
   type        = string
-  default     = ""
+  default     = null
   description = "AWS EC2 recovery role path."
 }
 
 variable "external_id" {
   type        = string
-  default     = ""
+  default     = null
   description = "AWS external ID. If empty, RSC will automatically generate an external ID."
 }
 
@@ -112,6 +117,6 @@ variable "regions" {
 
 variable "tags" {
   type        = map(string)
-  default     = {}
+  default     = null
   description = "Tags to apply to AWS resources created."
 }
