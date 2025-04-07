@@ -24,7 +24,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'if [ "$RUN_TESTS" != "false" ]; then terraform init -no-color; fi'
+                sh 'terraform init -no-color'
                 sh 'if [ "$RUN_TESTS" != "false" ]; then terraform test -no-color; fi'
             }
         }
